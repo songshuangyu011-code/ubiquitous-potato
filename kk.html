@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NewJeans World</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;600;700&family=VT323&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <style>
+    :root {
+      --y2k-pink:#FF6EC7;--y2k-purple:#B967FF;--y2k-blue:#05D9E8;
+      --y2k-lime:#C6F806;--y2k-orange:#FF9A3C;
+      --macaron-bg:#B8E8E0;--macaron-light:#D4F5EF;--macaron-mid:#9DD8CE;
+      --phone-pink:#FFB6C1;--phone-pink-dark:#FF85A2;--phone-pink-light:#FFD1DC;
+      --gradient-holo:linear-gradient(135deg,#FF6EC7,#B967FF,#05D9E8,#C6F806,#FF9A3C);
+      --font-pixel:'Press Start 2P',monospace;
+      --font-body:'Space Grotesk',sans-serif;
+      --font-retro:'VT323',monospace;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--y2k-pink) var(--macaron-mid);}
+    html::-webkit-scrollbar{width:10px;}
+    html::-webkit-scrollbar-track{background:var(--macaron-mid);}
+    html::-webkit-scrollbar-thumb{background:var(--gradient-holo);border-radius:5px;}
+    body{
+      font-family:var(--font-body);background:var(--macaron-bg);color:#2a2a2a;
+      overflow-x:hidden;position:relative;
+      cursor:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><text y='24' font-size='24'>🐰</text></svg>") 4 4,auto;
+    }
+    a,button,input,textarea{
+      cursor:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><text y='24' font-size='24'>🐰</text></svg>") 4 4,auto;
+    }
+
+    /* ====== Halftone Dots ====== */
+    body::before{
+      content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+      background-image:radial-gradient(circle,rgba(0,0,0,.06) 1px,transparent 1px);
+      background-size:12px 12px;
+    }
+
+    /* ====== Loading Screen ====== */
+    #loader{
+      position:fixed;inset:0;z-index:99999;
+      background:linear-gradient(135deg,#FFD1DC,#B8E8E0);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      transition:opacity .6s,visibility .6s;
+    }
+    #loader.hidden{opacity:0;visibility:hidden;pointer-events:none;}
+    #loader h2{font-family:var(--font-pixel);font-size:14px;color:#FF6EC7;margin-bottom:30px;text-shadow:2px 2px 0 #fff;}
+    .loader-bar-outer{
+      width:320px;height:28px;background:#fff;border-radius:14px;
+      box-shadow:inset 0 2px 4px rgba(0,0,0,.15),0 2px 8px rgba(255,110,199,.3);
+      overflow:hidden;position:relative;
+    }
+    .loader-bar-inner{
+      height:100%;width:0%;border-radius:14px;
+      background:var(--gradient-holo);background-size:200% 100%;
+      animation:holoShift 1s linear infinite;
+      transition:width .3s;
+    }
+    .loader-percent{
+      font-family:var(--font-retro);font-size:22px;margin-top:12px;color:#FF85A2;
+    }
+    .loader-bunny{font-size:48px;margin-bottom:20px;animation:bounce .6s infinite alternate;}
+    @keyframes bounce{0%{transform:translateY(0)}100%{transform:translateY(-15px)}}
+    @keyframes holoShift{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+
+    /* ====== Floating Stars ====== */
+    .star{
+      position:fixed;z-index:1;pointer-events:none;
+      color:#FFB6C1;opacity:.5;animation:floatStar linear infinite;
+      text-shadow:0 0 6px rgba(255,182,193,.6);
+    }
+    @keyframes floatStar{
+      0%{transform:translateY(0) rotate(0deg);}
+      50%{transform:translateY(-40px) rotate(180deg);}
+      100%{transform:translateY(0) rotate(360deg);}
+    }
+
+    /* ====== Navigation ====== */
+    nav{
+      position:fixed;top:0;left:0;right:0;z-index:1000;
+      background:rgba(184,232,224,.85);backdrop-filter:blur(12px);
+      border-bottom:2px solid rgba(255,110,199,.3);
+      padding:0 40px;height:52px;display:flex;align-items:center;justify-content:space-between;
+    }
+    .nav-logo{font-family:var(--font-pixel);font-size:11px;color:var(--y2k-pink);text-shadow:1px 1px 0 #fff;}
+    .nav-links{display:flex;gap:8px;}
+    .nav-links a{
+      font-family:var(--font-retro);font-size:18px;
+      text-decoration:none;color:#2a2a2a;
+      background:var(--phone-pink-light);border:2px solid var(--phone-pink);
+      padding:4px 14px;border-radius:4px;
+      transition:all .2s;
+    }
+    .nav-links a:hover{
+      background:var(--y2k-pink);color:#fff;transform:translateY(-2px);
+      box-shadow:0 4px 12px rgba(255,110,199,.4);
+    }
+
+    /* ====== Hero / Home Section ====== */
+    #home{
+      min-height:100vh;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      position:relative;z-index:2;padding:80px 20px 40px;
+    }
+    .hero-title{
+      font-family:var(--font-pixel);font-size:clamp(28px,5vw,56px);
+      text-align:center;
+      background:var(--gradient-holo);background-size:300% 300%;
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-clip:text;
+      animation:holoShift 4s ease infinite;
+      filter:drop-shadow(3px 3px 0 rgba(255,110,199,.3));
+      margin-bottom:10px;
+    }
+    .hero-sub{
+      font-family:var(--font-retro);font-size:clamp(20px,3vw,32px);
+      color:var(--y2k-pink);text-align:center;
+      text-shadow:1px 1px 0 #fff;margin-bottom:50px;letter-spacing:2px;
+    }
+
+    /* ====== 3D Photo Wall ====== */
+.photo-wall{
+ width:100%;max-width:1200px;height:950px;
+      position:relative;margin:0 auto;
+      perspective:1200px;
+    }
+    .photo-card{
+      position:absolute;width:300px;
+      transition:transform .5s cubic-bezier(.25,.46,.45,.94),box-shadow .5s;
+      transform-style:preserve-3d;
+    }
+    .photo-card:hover{
+      z-index:100 !important;
+      transform:rotate(0deg) scale(1.15) translateZ(40px) !important;
+      box-shadow:0 25px 60px rgba(255,110,199,.4),0 0 30px rgba(5,217,232,.2);
+    }
+    /* Polaroid */
+    .frame-polaroid{
+      background:#fff;padding:12px 12px 45px;
+      box-shadow:3px 3px 15px rgba(0,0,0,.15);border-radius:2px;
+    }
+    .frame-polaroid .photo-img{
+      width:100%;height:280px;object-fit:cover;display:block;
+    }
+    .frame-polaroid .photo-caption{
+      font-family:var(--font-retro);font-size:18px;text-align:center;
+      margin-top:8px;color:#666;
+    }
+    /* Windows 98 */
+    .frame-win98{
+      background:#C0C0C0;border:2px outset #fff;border-radius:0;
+    }
+    .frame-win98 .win-titlebar{
+      background:linear-gradient(90deg,#000080,#1084D0);
+      padding:3px 6px;display:flex;align-items:center;justify-content:space-between;
+    }
+    .frame-win98 .win-titlebar span{font-family:var(--font-pixel);font-size:8px;color:#fff;}
+    .frame-win98 .win-titlebar .win-btns{display:flex;gap:2px;}
+    .frame-win98 .win-titlebar .win-btn{
+      width:16px;height:14px;background:#C0C0C0;border:1px outset #fff;
+      font-size:9px;display:flex;align-items:center;justify-content:center;
+    }
+    .frame-win98 .photo-img{width:100%;height:280px;object-fit:cover;border:2px inset #808080;}
+    .frame-win98 .photo-caption{
+      font-family:var(--font-retro);font-size:16px;text-align:center;
+      padding:5px;color:#000;
+    }
+    /* Glitter */
+    .frame-glitter{
+      background:linear-gradient(135deg,#FFD1DC,#E8B4F8,#B4E8F8);
+      padding:10px;border-radius:12px;
+      box-shadow:0 0 20px rgba(255,110,199,.3);
+      position:relative;overflow:hidden;
+    }
+    .frame-glitter::before{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.6) 45%,rgba(255,255,255,.8) 50%,rgba(255,255,255,.6) 55%,transparent 60%);
+      background-size:200% 100%;
+      animation:scanGlitter 3s ease-in-out infinite;
+      pointer-events:none;z-index:2;
+    }
+    @keyframes scanGlitter{
+      0%{background-position:200% 0}
+      100%{background-position:-200% 0}
+    }
+    .frame-glitter .photo-img{
+      width:100%;height:280px;object-fit:cover;border-radius:8px;display:block;
+      position:relative;z-index:1;
+    }
+    .frame-glitter .photo-caption{
+      font-family:var(--font-retro);font-size:18px;text-align:center;
+      margin-top:6px;color:#FF6EC7;position:relative;z-index:1;
+      text-shadow:0 0 6px rgba(255,110,199,.5);
+    }
+
+    /* 3D tilt on hover */
+    .photo-card .shine-overlay{
+      position:absolute;inset:0;pointer-events:none;z-index:10;
+      background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.25) 0%,transparent 60%);
+      opacity:0;transition:opacity .3s;border-radius:inherit;
+    }
+    .photo-card:hover .shine-overlay{opacity:1;}
+/* ====== Members Section ====== */
+    #about{position:relative;z-index:2;padding:80px 20px;}
+    .section-title{
+      font-family:var(--font-pixel);font-size:clamp(16px,3vw,26px);
+      text-align:center;margin-bottom:50px;
+      background:var(--gradient-holo);background-size:300% 300%;
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-clip:text;animation:holoShift 4s ease infinite;
+    }
+    .members-grid{
+      max-width:1000px;margin:0 auto;
+      display:flex;flex-wrap:wrap;justify-content:center;gap:30px;
+    }
+    .member-card{
+      width:280px;background:rgba(255,255,255,.75);
+      border-radius:16px;overflow:hidden;
+      backdrop-filter:blur(8px);
+      border:2px solid rgba(255,182,193,.5);
+      box-shadow:0 8px 30px rgba(255,110,199,.12);
+      transition:transform .3s,box-shadow .3s;
+    }
+    .member-card:hover{
+      transform:translateY(-8px) scale(1.03);
+      box-shadow:0 16px 40px rgba(255,110,199,.25);
+    }
+    .member-photo{
+      width:100%;height:260px;object-fit:cover;
+      border-bottom:3px solid var(--phone-pink);
+    }
+    .member-info{padding:18px;text-align:center;}
+    .member-name{
+      font-family:var(--font-pixel);font-size:12px;
+      color:var(--y2k-pink);margin-bottom:6px;
+    }
+    .member-role{
+      font-family:var(--font-retro);font-size:20px;color:#888;margin-bottom:8px;
+    }
+    .member-desc{font-size:13px;line-height:1.6;color:#555;}
+
+    /* ====== Music Section ====== */
+    #music{position:relative;z-index:2;padding:80px 20px;}
+    .music-layout{
+      max-width:1000px;margin:0 auto;
+      display:flex;gap:40px;align-items:flex-start;justify-content:center;
+      flex-wrap:wrap;
+    }
+    /* Flip Phone */
+    .flip-phone{
+      width:260px;flex-shrink:0;
+    }
+    .flip-top{
+      background:linear-gradient(180deg,var(--phone-pink-dark),var(--phone-pink));
+      border-radius:30px 30px 6px 6px;padding:20px 18px 10px;
+      border:3px solid #e8829a;position:relative;
+      box-shadow:inset 0 2px 8px rgba(255,255,255,.3),0 8px 25px rgba(255,133,162,.3);
+    }
+    .flip-top::before{
+      content:'';position:absolute;top:10px;left:50%;transform:translateX(-50%);
+      width:50px;height:6px;background:rgba(0,0,0,.15);border-radius:3px;
+    }
+    .phone-screen{
+      width:100%;aspect-ratio:4/5;background:#1a1a2e;border-radius:8px;
+      border:3px solid #333;margin-top:10px;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      overflow:hidden;position:relative;
+    }
+    .phone-screen .screen-top{
+      width:100%;padding:4px 8px;background:rgba(255,255,255,.05);
+      display:flex;justify-content:space-between;align-items:center;
+      font-family:var(--font-retro);font-size:12px;color:rgba(255,255,255,.5);
+      position:absolute;top:0;left:0;
+    }
+    .phone-screen .album-art{
+      width:120px;height:120px;border-radius:8px;
+      background:var(--gradient-holo);background-size:300% 300%;
+      animation:holoShift 4s ease infinite;
+      margin-bottom:10px;display:flex;align-items:center;justify-content:center;
+      font-size:40px;box-shadow:0 4px 15px rgba(0,0,0,.3);
+    }
+    .phone-screen .song-title{
+      font-family:var(--font-pixel);font-size:8px;color:#fff;
+      text-align:center;margin-bottom:4px;
+    }
+    .phone-screen .song-artist{
+      font-family:var(--font-retro);font-size:16px;color:var(--phone-pink);
+    }
+    .phone-screen .progress-bar{
+      width:80%;height:4px;background:rgba(255,255,255,.15);border-radius:2px;
+      margin:12px 0 6px;position:relative;overflow:hidden;
+    }
+    .phone-screen .progress-bar .progress-fill{
+      height:100%;width:35%;background:var(--y2k-pink);border-radius:2px;
+      animation:playProgress 8s linear infinite;
+    }
+    @keyframes playProgress{0%{width:0%}100%{width:100%}}
+    .phone-screen .time-display{
+      font-family:var(--font-retro);font-size:14px;color:rgba(255,255,255,.4);
+      width:80%;display:flex;justify-content:space-between;
+    }
+    .phone-controls{
+      display:flex;gap:6px;margin-top:12px;
+    }
+    .phone-controls button{
+      width:36px;height:36px;border-radius:50%;border:none;
+      background:rgba(255,255,255,.1);color:#fff;font-size:14px;
+      transition:all .2s;display:flex;align-items:center;justify-content:center;
+    }
+    .phone-controls button:hover{background:var(--y2k-pink);transform:scale(1.15);}
+    .phone-controls button.play-btn{width:44px;height:44px;font-size:18px;background:var(--y2k-pink);}
+
+    .flip-hinge{
+      width:90%;height:14px;margin:0 auto;
+      background:linear-gradient(180deg,#e8829a,var(--phone-pink-dark),#e8829a);
+      border-radius:0 0 4px 4px;
+    }
+    .flip-bottom{
+      background:linear-gradient(180deg,var(--phone-pink),var(--phone-pink-dark));
+      border-radius:6px 6px 30px 30px;padding:15px;
+      border:3px solid #e8829a;border-top:none;
+      box-shadow:inset 0 -2px 8px rgba(0,0,0,.1),0 12px 25px rgba(255,133,162,.3);
+    }
+    .phone-keypad{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
+    }
+    .phone-key{
+      background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.3);
+      border-radius:6px;padding:8px 0;text-align:center;
+      font-family:var(--font-retro);font-size:18px;color:#fff;
+      transition:all .15s;
+    }
+    .phone-key:hover{background:rgba(255,255,255,.45);transform:scale(.95);}
+    .phone-key.key-wide{grid-column:span 3;border-radius:20px;padding:6px 0;font-size:14px;}
+
+    /* Song List */
+    .song-list-container{
+      flex:1;min-width:280px;max-width:420px;
+      background:rgba(255,255,255,.6);border-radius:16px;
+      border:2px solid var(--phone-pink);
+      box-shadow:0 8px 30px rgba(255,110,199,.1);
+      overflow:hidden;
+    }
+    .song-list-header{
+      background:var(--phone-pink);padding:12px 18px;
+      font-family:var(--font-pixel);font-size:10px;color:#fff;
+      display:flex;align-items:center;gap:8px;
+    }
+    .song-list-scroll{
+      max-height:420px;overflow-y:auto;padding:8px;
+    }
+    .song-list-scroll::-webkit-scrollbar{width:6px;}
+    .song-list-scroll::-webkit-scrollbar-track{background:transparent;}
+    .song-list-scroll::-webkit-scrollbar-thumb{background:var(--phone-pink);border-radius:3px;}
+    .song-item{
+      display:flex;align-items:center;gap:12px;
+      padding:10px 12px;border-radius:10px;
+      transition:all .2s;margin-bottom:4px;
+    }
+    .song-item:hover{background:rgba(255,182,193,.25);}
+    .song-item.active{background:rgba(255,110,199,.15);border:1px solid var(--phone-pink);}
+    .song-num{
+      font-family:var(--font-retro);font-size:22px;color:var(--phone-pink-dark);
+      width:24px;text-align:center;
+    }
+    .song-info{flex:1;}
+    .song-info .s-title{font-weight:600;font-size:14px;color:#333;}
+    .song-info .s-album{font-family:var(--font-retro);font-size:16px;color:#999;}
+    .song-dur{font-family:var(--font-retro);font-size:18px;color:#aaa;}
+
+    /* ====== Collage / Fanclub ====== */
+    #fanclub{position:relative;z-index:2;padding:80px 20px;}
+    .collage-notebook{
+      max-width:1100px;margin:0 auto;
+      min-height:700px;
+      background:
+        repeating-linear-gradient(transparent,transparent 27px,#aed8cc 28px),
+        linear-gradient(90deg,transparent 60px,#f5d5d5 61px,transparent 62px),
+        #fdf6ec;
+      border-radius:8px;padding:40px 80px;position:relative;
+      box-shadow:4px 4px 20px rgba(0,0,0,.12),-2px 0 10px rgba(0,0,0,.05);
+      border:1px solid #e0d5c0;
+    }
+    .collage-notebook::before{
+      content:'';position:absolute;left:55px;top:0;bottom:0;width:2px;
+      background:#f5aaaa;opacity:.5;
+    }
+    .notebook-title{
+      font-family:var(--font-pixel);font-size:14px;color:var(--y2k-pink);
+      text-align:center;margin-bottom:30px;
+    }
+    .collage-area{
+      position:relative;min-height:500px;
+    }
+    .collage-item{
+      position:absolute;cursor:grab;user-select:none;
+      transition:box-shadow .2s;
+    }
+    .collage-item:active{cursor:grabbing;box-shadow:0 10px 30px rgba(0,0,0,.2);}
+    .collage-item img{
+      max-width:100%;border-radius:4px;pointer-events:none;
+    }
+    .sticker{
+      font-size:clamp(30px,5vw,50px);position:absolute;cursor:grab;user-select:none;
+    }
+    .sticker:active{cursor:grabbing;}
+    .text-note{
+      position:absolute;cursor:grab;user-select:none;
+      background:#fffacd;padding:10px 14px;
+      font-family:var(--font-retro);font-size:18px;color:#555;
+      box-shadow:2px 2px 6px rgba(0,0,0,.1);
+      transform:rotate(-2deg);min-width:100px;
+    }
+    .upload-btn{
+      position:absolute;bottom:20px;right:20px;
+      width:56px;height:56px;border-radius:50%;border:none;
+      background:var(--y2k-pink);color:#fff;font-size:30px;
+      box-shadow:0 4px 15px rgba(255,110,199,.4);
+      transition:all .2s;z-index:10;display:flex;align-items:center;justify-content:center;
+    }
+    .upload-btn:hover{transform:scale(1.1) rotate(90deg);background:var(--y2k-purple);}
+
+    /* ====== Message Board ====== */
+    #msgboard{position:relative;z-index:2;padding:80px 20px;}
+    .msg-section{max-width:800px;margin:0 auto;}
+    .msg-input-area{
+      display:flex;gap:10px;margin-bottom:30px;flex-wrap:wrap;justify-content:center;
+    }
+    .msg-input-area input{
+      flex:1;min-width:240px;padding:12px 18px;border-radius:30px;
+      border:2px solid var(--phone-pink);background:rgba(255,255,255,.7);
+      font-family:var(--font-body);font-size:15px;outline:none;
+      transition:border-color .2s;
+    }
+    .msg-input-area input:focus{border-color:var(--y2k-pink);}
+    .msg-input-area button{
+      padding:12px 28px;border-radius:30px;border:none;
+      background:var(--y2k-pink);color:#fff;font-family:var(--font-pixel);
+      font-size:10px;transition:all .2s;
+    }
+    .msg-input-area button:hover{background:var(--y2k-purple);transform:translateY(-2px);}
+    .danmaku-stage{
+      width:100%;height:260px;position:relative;overflow:hidden;
+      background:rgba(255,255,255,.25);border-radius:16px;
+      border:2px solid rgba(255,182,193,.4);
+    }
+  .danmaku{
+  position:absolute;
+  left: 100%;
+  white-space:nowrap;
+  font-family:var(--font-retro);
+  font-size:22px;
+  color:var(--y2k-pink);
+  text-shadow:1px 1px 0 #fff;
+  animation:danmakuMove linear forwards;
+  pointer-events:none;
+}
+
+@keyframes danmakuMove{
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(calc(-100% - 100vw)); }
+}
+
+    /* ====== Footer ====== */
+    footer{
+      text-align:center;padding:40px 20px;
+      font-family:var(--font-retro);font-size:18px;color:#888;
+      position:relative;z-index:2;
+    }
+    footer .heart{color:var(--y2k-pink);animation:pulse 1s infinite;}
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+
+    /* ====== Responsive ====== */
+    @media(max-width:768px){
+      nav{padding:0 15px;height:48px;}
+      .nav-links a{font-size:14px;padding:3px 8px;}
+      .photo-wall{height:auto;min-height:600px;}
+      .photo-card{width:160px !important;}
+      .frame-polaroid .photo-img,.frame-win98 .photo-img,.frame-glitter .photo-img{height:140px;}
+      .member-card{width:240px;}
+      .music-layout{flex-direction:column;align-items:center;}
+      .flip-phone{width:240px;}
+      .collage-notebook{padding:30px 20px 30px 70px;}
+    }
+  </style>
+</head>
+<body>
+<!-- ===== LOADER ===== -->
+  <div id="loader">
+    <div class="loader-bunny">🐰</div>
+    <h2>NewJeans World</h2>
+    <div class="loader-bar-outer">
+      <div class="loader-bar-inner" id="loaderBar"></div>
+    </div>
+    <div class="loader-percent" id="loaderPercent">0%</div>
+  </div>
+
+  <!-- ===== FLOATING STARS ===== -->
+  <div id="stars-container"></div>
+
+  <!-- ===== NAVIGATION ===== -->
+  <nav>
+    <div class="nav-logo">🐰 NJ World</div>
+    <div class="nav-links">
+      <a href="#home">START.exe</a>
+      <a href="#about">PROFILE.doc</a>
+      <a href="#music">CD_PLAYER.mp3</a>
+      <a href="#fanclub">BUNNIES.chat</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════
+       SECTION 1 — HOME / PHOTO WALL
+  ═══════════════════════════════════════ -->
+  <section id="home">
+    <h1 class="hero-title">NewJeans World</h1>
+    <p class="hero-sub">✦ Welcome to bunnies club ✦</p>
+
+    <div class="photo-wall" id="photoWall">
+      <!-- Photo 1: Group – Polaroid -->
+<div class="photo-card frame-polaroid" style="top:4%;left:5%;transform:rotate(-14deg);z-index:2;">
+        <div class="shine-overlay"></div>
+        <img class="photo-img" src="img/group.jpg" alt="NJ Group" />
+        <div class="photo-caption">NJ 1st EP</div>
+      </div>
+
+      <!-- Photo 2: Minji – Win98 -->
+    <div class="photo-card frame-win98" style="top:12%;left:28%;transform:rotate(4deg);z-index:3;">
+        <div class="shine-overlay"></div>
+        <div class="win-titlebar">
+          <span>minji.bmp</span>
+          <div class="win-btns">
+            <div class="win-btn">─</div><div class="win-btn">□</div><div class="win-btn">✕</div>
+          </div>
+        </div>
+        <img class="photo-img" src="img/minji.jpg" alt="Minji" />
+        <div class="photo-caption">Bunnies Club</div>
+      </div>
+
+      <!-- Photo 3: Hanni – Glitter -->
+<div class="photo-card frame-glitter" style="top:2%;left:55%;transform:rotate(-6deg);z-index:5;">
+        <div class="shine-overlay"></div>
+        <img class="photo-img" src="img/hanni.jpg" alt="Hanni" />
+        <div class="photo-caption">OMG!</div>
+      </div>
+
+      <!-- Photo 4: Danielle – Polaroid -->
+  <div class="photo-card frame-polaroid" style="top:38%;left:12%;transform:rotate(11deg);z-index:4;">
+        <div class="shine-overlay"></div>
+        <img class="photo-img" src="img/danielle.jpg"alt="Danielle" />
+        <div class="photo-caption">Sunflower</div>
+      </div>
+
+      <!-- Photo 5: Haerin – Win98 -->
+      <div class="photo-card frame-win98" style="top:44%;left:42%;transform:rotate(-8deg);z-index:6;">
+        <div class="win-titlebar">
+          <span>haerin.bmp</span>
+          <div class="win-btns">
+            <div class="win-btn">─</div><div class="win-btn">□</div><div class="win-btn">✕</div>
+          </div>
+        </div>
+        <img class="photo-img" src="img/haerin.jpg" alt="Haerin" />
+        <div class="photo-caption">Cat or Frog?</div>
+      </div>
+
+      <!-- Photo 6: Hyein – Glitter -->
+  <div class="photo-card frame-glitter" style="top:6%;left:65%;transform:rotate(13deg);z-index:1;">
+        <div class="shine-overlay"></div>
+        <img class="photo-img" src="img/hyein.jpg" alt="Hyein" />
+        <div class="photo-caption">Maknae</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       SECTION 2 — MEMBERS
+  ═══════════════════════════════════════ -->
+  <section id="about">
+    <h2 class="section-title">✦ PROFILE.doc ✦</h2>
+    <div class="members-grid">
+      <!-- Row 1: 3 members -->
+      <div class="member-card">
+        <img class="member-photo" src="img/minji-profile.jpg" alt="Minji" />
+        <div class="member-info">
+          <div class="member-name">MINJI 민지</div>
+          <div class="member-role">Leader · Vocal · Dance</div>
+          <div class="member-desc">Born 2004.05.07 — The dependable captain with dazzling stage presence ✨</div>
+        </div>
+      </div>
+      <div class="member-card">
+        <img class="member-photo" src="img/hanni-profile.jpg" alt="Hanni" />
+        <div class="member-info">
+          <div class="member-name">HANNI 하니</div>
+          <div class="member-role">Vocal · Dance</div>
+          <div class="member-desc">Born 2004.10.06 — From Melbourne with love, the sweetest voice 🍬</div>
+        </div>
+      </div>
+      <div class="member-card">
+        <img class="member-photo" src="img/danielle-profile.jpg" alt="Danielle" />
+        <div class="member-info">
+          <div class="member-name">DANIELLE 다니엘</div>
+          <div class="member-role">Vocal · Dance</div>
+          <div class="member-desc">Born 2005.04.11 — Bilingual sunshine spreading warmth everywhere 🌻</div>
+        </div>
+      </div>
+      <!-- Row 2: 2 members -->
+      <div class="member-card">
+        <img class="member-photo" src="img/haerin-profile.jpg" alt="Haerin" />
+        <div class="member-info">
+          <div class="member-name">HAERIN 해린</div>
+          <div class="member-role">Vocal · Dance</div>
+          <div class="member-desc">Born 2006.05.15 — Cat-like charm with a frog-loving heart 🐱🐸</div>
+        </div>
+      </div>
+      <div class="member-card">
+        <img class="member-photo" src="img/hyein-profile.jpg" alt="Hyein" />
+        <div class="member-info">
+          <div class="member-name">HYEIN 혜인</div>
+          <div class="member-role">Vocal · Dance · Maknae</div>
+          <div class="member-desc">Born 2008.04.21 — The youngest queen with incredible talent 👑</div>
+        </div>
+      </div>
+    </div>
+  </section>
+<!-- ═══════════════════════════════════════
+       SECTION 3 — MUSIC / FLIP PHONE
+  ═══════════════════════════════════════ -->
+  <section id="music">
+    <h2 class="section-title">✦ CD_PLAYER.mp3 ✦</h2>
+    <div class="music-layout">
+<audio id="audio-player" preload="auto"></audio>
+      <!-- Flip Phone -->
+      <div class="flip-phone">
+        <div class="flip-top">
+          <div class="phone-screen" id="phoneScreen">
+            <div class="screen-top">
+              <span>♡♡♡</span><span id="phoneTime">12:00</span>
+            </div>
+            <div class="album-art" id="albumArt">💿</div>
+            <div class="song-title" id="nowTitle">Attention</div>
+            <div class="song-artist">NewJeans</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            <div class="time-display"><span>1:12</span><span>3:00</span></div>
+            <div class="phone-controls">
+              <button id="prevBtn">⏮</button>
+              <button class="play-btn" id="playBtn">▶</button>
+              <button id="nextBtn">⏭</button>
+            </div>
+          </div>
+        </div>
+        <div class="flip-hinge"></div>
+        <div class="flip-bottom">
+          <div class="phone-keypad">
+            <div class="phone-key">1</div><div class="phone-key">2</div><div class="phone-key">3</div>
+            <div class="phone-key">4</div><div class="phone-key">5</div><div class="phone-key">6</div>
+            <div class="phone-key">7</div><div class="phone-key">8</div><div class="phone-key">9</div>
+            <div class="phone-key">*</div><div class="phone-key">0</div><div class="phone-key">#</div>
+            <div class="phone-key key-wide">MENU</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Song List (scrollable) -->
+      <div class="song-list-container">
+        <div class="song-list-header">🎵 TRACKLIST</div>
+        <div class="song-list-scroll" id="songListScroll">
+          <!-- Songs filled by JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       SECTION 4 — FANCLUB COLLAGE
+  ═══════════════════════════════════════ -->
+  <section id="fanclub">
+    <h2 class="section-title">✦ BUNNIES.chat ✦</h2>
+    <div class="collage-notebook">
+      <div class="notebook-title">📓 MY NEWJEANS SCRAPBOOK</div>
+      <div class="collage-area" id="collageArea">
+        <!-- Default stickers & notes (all draggable) -->
+        <div class="sticker" style="top:30px;left:80px;" data-draggable>🐰</div>
+        <div class="sticker" style="top:60px;left:350px;" data-draggable>⭐</div>
+        <div class="sticker" style="top:200px;left:500px;" data-draggable>🌸</div>
+        <div class="sticker" style="top:300px;left:120px;" data-draggable>💖</div>
+        <div class="sticker" style="top:150px;left:700px;" data-draggable>🎀</div>
+        <div class="sticker" style="top:350px;left:600px;" data-draggable>🦋</div>
+
+        <div class="text-note" style="top:80px;left:500px;" data-draggable>
+          I 💗 NewJeans!
+        </div>
+        <div class="text-note" style="top:260px;left:250px;transform:rotate(3deg);" data-draggable>
+          Bunnies forever 🐇
+        </div>
+        <div class="text-note" style="top:400px;left:400px;transform:rotate(-4deg);background:#ffd1dc;" data-draggable>
+          Hype Boy is my fav 🎧
+        </div>
+
+        <!-- Upload button -->
+        <button class="upload-btn" id="uploadBtn" title="Add image or sticker">＋</button>
+        <input type="file" id="fileInput" accept="image/*" style="display:none;" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       SECTION 5 — MESSAGE BOARD
+  ═══════════════════════════════════════ -->
+  <section id="msgboard">
+    <h2 class="section-title">✦ MESSAGE BOARD ✦</h2>
+    <div class="msg-section">
+      <div class="msg-input-area">
+        <input type="text" id="msgInput" placeholder="Write a message to Bunnies... 🐰" maxlength="80" />
+        <button id="msgSendBtn">SEND ✉</button>
+      </div>
+      <div class="danmaku-stage" id="danmakuStage">
+        <!-- Danmaku messages fly here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <p>Made with <span class="heart">♥</span> for Bunnies 🐰 | NewJeans World © 2024</p>
+  </footer>
+<script>
+    /* ═══════════════════════════════════════
+       LOADER
+    ═══════════════════════════════════════ */
+    (function(){
+      const bar = document.getElementById('loaderBar');
+      const pct = document.getElementById('loaderPercent');
+      let p = 0;
+      const iv = setInterval(()=>{
+        p += Math.random()*8 + 2;
+        if(p >= 100){ p = 100; clearInterval(iv); setTimeout(()=>document.getElementById('loader').classList.add('hidden'),400); }
+        bar.style.width = p+'%';
+        pct.textContent = Math.floor(p)+'%';
+      },120);
+    })();
+
+    /* ═══════════════════════════════════════
+       FLOATING STARS
+    ═══════════════════════════════════════ */
+    (function(){
+      const c = document.getElementById('stars-container');
+      const sizes = [18,24,30,36,42,50,58];
+      for(let i=0;i<30;i++){
+        const s = document.createElement('div');
+        s.className='star';
+        const sz = sizes[Math.floor(Math.random()*sizes.length)];
+        s.textContent = Math.random()>.3 ? '★' : '✦';
+        s.style.cssText=`
+          font-size:${sz}px;
+          left:${Math.random()*100}%;
+          top:${Math.random()*100}%;
+          opacity:${.2+Math.random()*.4};
+          animation-duration:${4+Math.random()*6}s;
+          animation-delay:${Math.random()*4}s;
+        `;
+        c.appendChild(s);
+      }
+    })();
+
+    /* ═══════════════════════════════════════
+       3D PHOTO WALL — TILT + SHINE
+    ═══════════════════════════════════════ */
+    document.querySelectorAll('.photo-card').forEach(card=>{
+      card.addEventListener('mousemove',e=>{
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left)/r.width;
+        const y = (e.clientY - r.top)/r.height;
+        const rotY = (x-.5)*25;
+        const rotX = (y-.5)*-25;
+        // keep original rotation from style
+        card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.1) translateZ(30px)`;
+        const shine = card.querySelector('.shine-overlay');
+        if(shine){
+          shine.style.setProperty('--mx', x*100+'%');
+          shine.style.setProperty('--my', y*100+'%');
+        }
+      });
+      card.addEventListener('mouseleave',()=>{
+        // restore original rotation
+        const orig = card.getAttribute('data-orig-transform') || card.style.transform;
+        card.style.transform = card.dataset.origTransform || '';
+      });
+      // Save original transform
+      card.dataset.origTransform = card.style.transform;
+    });
+
+    /* ═══════════════════════════════════════
+       MUSIC PLAYER
+    ═══════════════════════════════════════ */
+    const songs = [
+      {title:'Attention',album:'NewJeans 1st EP',dur:'3:00',emoji:'🎧'},
+      {title:'Hype Boy',album:'NewJeans 1st EP',dur:'2:59',emoji:'🔥'},
+      {title:'Cookie',album:'NewJeans 1st EP',dur:'3:14',emoji:'🍪'},
+      {title:'Hurt',album:'NewJeans 1st EP',dur:'2:52',emoji:'💔'},
+      {title:'Ditto',album:'OMG',dur:'3:06',emoji:'👻'},
+      {title:'OMG',album:'OMG',dur:'3:31',emoji:'😱'},
+      {title:'Super Shy',album:'Get Up',dur:'2:34',emoji:'🫣'},
+      {title:'ETA',album:'Get Up',dur:'2:32',emoji:'⏰'},
+      {title:'Cool With You',album:'Get Up',dur:'2:58',emoji:'💙'},
+      {title:'New Jeans',album:'Get Up',dur:'2:45',emoji:'👖'},
+      {title:'ASAP',album:'How Sweet',dur:'2:56',emoji:'⚡'},
+      {title:'Bubble Gum',album:'How Sweet',dur:'3:08',emoji:'🫧'},
+      {title:'How Sweet',album:'How Sweet',dur:'2:52',emoji:'🍯'},
+      {title:'Right Now',album:'Supernatural',dur:'2:44',emoji:'✨'},
+      {title:'Supernatural',album:'Supernatural',dur:'3:15',emoji:'🌙'},
+    ];
+    let currentSong = 0;
+    let isPlaying = false;
+
+    const listEl = document.getElementById('songListScroll');
+    songs.forEach((s,i)=>{
+      const d = document.createElement('div');
+      d.className = 'song-item' + (i===0?' active':'');
+      d.innerHTML = `
+        <div class="song-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="song-info"><div class="s-title">${s.emoji} ${s.title}</div><div class="s-album">${s.album}</div></div>
+        <div class="song-dur">${s.dur}</div>
+      `;
+      d.addEventListener('click',()=>playSong(i));
+      listEl.appendChild(d);
+    });
+
+   const audioPlayer = document.getElementById('audio-player');
+const audioFiles = {
+  'Attention':    'music/attention.mp3',
+  'Hype Boy':     'music/hype-boy.mp3',
+  'Cookie':       'music/cookie.mp3',
+  'Hurt':         'music/hurt.mp3',
+  'Ditto':        'music/ditto.mp3',
+  'OMG':          'music/omg.mp3',
+  'Super Shy':    'music/super-shy.mp3',
+  'ETA':          'music/eta.mp3',
+  'Cool With You':'music/cool-with-you.mp3',
+  'New Jeans':    'music/new-jeans.mp3',
+  'ASAP':         'music/asap.mp3',
+  'Bubble Gum':   'music/bubble-gum.mp3',
+  'How Sweet':    'music/how-sweet.mp3',
+  'Right Now':    'music/right-now.mp3',
+  'Supernatural': 'music/supernatural.mp3',
+};
+
+function playSong(i){
+  currentSong = i;
+  const s = songs[i];
+  document.getElementById('nowTitle').textContent = s.title;
+  document.getElementById('albumArt').textContent = s.emoji;
+  isPlaying = true;
+  document.getElementById('playBtn').textContent = '⏸';
+  // highlight
+  document.querySelectorAll('.song-item').forEach((el,idx)=>{
+    el.classList.toggle('active',idx===i);
+  });
+  // restart progress animation
+  const pf = document.getElementById('progressFill');
+  pf.style.animation='none'; pf.offsetHeight; pf.style.animation='playProgress 8s linear infinite';
+
+  // ===== 真正播放音频 =====
+  if(audioFiles[s.title]){
+    audioPlayer.src = audioFiles[s.title];
+    audioPlayer.play().catch(err => {
+      console.log('播放被浏览器拦截:', err);
+    });
+  }
+}
+
+// 歌曲播完自动下一首
+audioPlayer.addEventListener('ended', ()=>{
+  playSong((currentSong+1) % songs.length);
+});
+    document.getElementById('playBtn').addEventListener('click',()=>{
+  if(isPlaying){
+    audioPlayer.pause();
+    isPlaying = false;
+    document.getElementById('playBtn').textContent = '▶';
+  } else {
+    // 如果还没选过歌，先加载第一首
+    if(!audioPlayer.src || audioPlayer.src === ''){
+      playSong(0);
+    } else {
+      audioPlayer.play().catch(err => console.log(err));
+    }
+    isPlaying = true;
+    document.getElementById('playBtn').textContent = '⏸';
+  }
+});
+    document.getElementById('prevBtn').addEventListener('click',()=>playSong((currentSong-1+songs.length)%songs.length));
+    document.getElementById('nextBtn').addEventListener('click',()=>playSong((currentSong+1)%songs.length));
+
+    // Phone time
+    (function updatePhoneTime(){
+      const n=new Date();
+      document.getElementById('phoneTime').textContent=
+        String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+      setTimeout(updatePhoneTime,30000);
+    })();
+
+    /* ═══════════════════════════════════════
+       COLLAGE — DRAG EVERYTHING
+    ═══════════════════════════════════════ */
+    (function(){
+      const area = document.getElementById('collageArea');
+      let dragging = null, offX=0, offY=0;
+
+      function makeDraggable(el){
+        el.addEventListener('mousedown',startDrag);
+        el.addEventListener('touchstart',startDragTouch,{passive:false});
+      }
+      function startDrag(e){
+        dragging=e.currentTarget;
+        const r=dragging.getBoundingClientRect();
+        const ar=area.getBoundingClientRect();
+        offX=e.clientX-r.left; offY=e.clientY-r.top;
+        dragging.style.zIndex=1000;
+        document.addEventListener('mousemove',onDrag);
+        document.addEventListener('mouseup',stopDrag);
+      }
+      function startDragTouch(e){
+        e.preventDefault();
+        const t=e.touches[0];
+        dragging=e.currentTarget;
+        const r=dragging.getBoundingClientRect();
+        offX=t.clientX-r.left; offY=t.clientY-r.top;
+        dragging.style.zIndex=1000;
+        document.addEventListener('touchmove',onDragTouch,{passive:false});
+        document.addEventListener('touchend',stopDrag);
+      }
+      function onDrag(e){
+        if(!dragging)return;
+        const ar=area.getBoundingClientRect();
+        dragging.style.left=(e.clientX-ar.left-offX)+'px';
+        dragging.style.top=(e.clientY-ar.top-offY)+'px';
+        dragging.style.position='absolute';
+      }
+      function onDragTouch(e){
+        e.preventDefault();
+        if(!dragging)return;
+        const t=e.touches[0];
+        const ar=area.getBoundingClientRect();
+        dragging.style.left=(t.clientX-ar.left-offX)+'px';
+        dragging.style.top=(t.clientY-ar.top-offY)+'px';
+        dragging.style.position='absolute';
+      }
+      function stopDrag(){
+        if(dragging)dragging.style.zIndex='';
+        dragging=null;
+        document.removeEventListener('mousemove',onDrag);
+        document.removeEventListener('mouseup',stopDrag);
+        document.removeEventListener('touchmove',onDragTouch);
+        document.removeEventListener('touchend',stopDrag);
+      }
+
+      // Make all existing draggable items
+      area.querySelectorAll('[data-draggable]').forEach(makeDraggable);
+      area.querySelectorAll('.collage-item').forEach(makeDraggable);
+
+      // Upload
+      document.getElementById('uploadBtn').addEventListener('click',()=>document.getElementById('fileInput').click());
+      document.getElementById('fileInput').addEventListener('change',function(e){
+        const file = e.target.files[0];
+        if(!file)return;
+        const reader = new FileReader();
+        reader.onload = function(ev){
+          const div = document.createElement('div');
+          div.className='collage-item';
+          div.setAttribute('data-draggable','');
+          div.style.cssText=`top:${50+Math.random()*200}px;left:${80+Math.random()*300}px;`;
+          const img = document.createElement('img');
+          img.src=ev.target.result;
+          img.style.maxWidth='180px';
+          img.style.maxHeight='180px';
+          img.style.borderRadius='6px';
+          img.style.boxShadow='3px 3px 12px rgba(0,0,0,.15)';
+          div.appendChild(img);
+          area.insertBefore(div,document.getElementById('uploadBtn'));
+          makeDraggable(div);
+        };
+        reader.readAsDataURL(file);
+        e.target.value='';
+      });
+    })();
+
+    /* ═══════════════════════════════════════
+       MESSAGE BOARD — DANMAKU
+    ═══════════════════════════════════════ */
+    (function(){
+      const stage = document.getElementById('danmakuStage');
+      const input = document.getElementById('msgInput');
+      const btn   = document.getElementById('msgSendBtn');
+      const colors=['#FF6EC7','#B967FF','#05D9E8','#FF9A3C','#ff85a2','#C6F806'];
+      const defaults = [
+        'NewJeans is the best! 💕','Attention!!! 🎧','Hype Boy 🔥',
+        'Super Shy 🫣','I love bunnies 🐰','OMG OMG OMG 😱',
+        'Ditto forever 👻','Cookie cookie 🍪'
+      ];
+
+      function fireDanmaku(text){
+        const d = document.createElement('div');
+        d.className='danmaku';
+        d.textContent=text;
+        d.style.top = Math.random()*85 + '%';
+        d.style.color = colors[Math.floor(Math.random()*colors.length)];
+        d.style.fontSize = (18+Math.random()*10)+'px';
+        d.style.animationDuration = (6+Math.random()*6)+'s';
+        stage.appendChild(d);
+        d.addEventListener('animationend',()=>d.remove());
+      }
+
+      btn.addEventListener('click',send);
+      input.addEventListener('keydown',e=>{if(e.key==='Enter')send();});
+      function send(){
+        const t=input.value.trim();
+        if(!t)return;
+        fireDanmaku(t);
+        input.value='';
+      }
+
+      // Auto danmaku
+      defaults.forEach((t,i)=>setTimeout(()=>fireDanmaku(t),2000+i*2500));
+      setInterval(()=>{
+        fireDanmaku(defaults[Math.floor(Math.random()*defaults.length)]);
+      },5000);
+    })();
+
+    /* ═══════════════════════════════════════
+       GSAP SCROLL ANIMATIONS
+    ═══════════════════════════════════════ */
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Photo cards fly in
+    gsap.utils.toArray('.photo-card').forEach((card,i)=>{
+      gsap.from(card,{
+        y:120,opacity:0,rotation:Math.random()*30-15,scale:.7,
+        duration:1,delay:i*.15,ease:'back.out(1.4)',
+        scrollTrigger:{trigger:'#home',start:'top 80%'}
+      });
+    });
+
+    // Member cards
+    gsap.utils.toArray('.member-card').forEach((card,i)=>{
+      gsap.from(card,{
+        y:80,opacity:0,scale:.85,duration:.8,delay:i*.12,ease:'power3.out',
+        scrollTrigger:{trigger:'#about',start:'top 75%'}
+      });
+    });
+
+    // Music section
+    gsap.from('.flip-phone',{
+      x:-100,opacity:0,duration:1,ease:'power3.out',
+      scrollTrigger:{trigger:'#music',start:'top 75%'}
+    });
+    gsap.from('.song-list-container',{
+      x:100,opacity:0,duration:1,ease:'power3.out',
+      scrollTrigger:{trigger:'#music',start:'top 75%'}
+    });
+
+    // Collage
+    gsap.from('.collage-notebook',{
+      y:100,opacity:0,rotation:-2,duration:1,ease:'power3.out',
+      scrollTrigger:{trigger:'#fanclub',start:'top 75%'}
+    });
+  </script>
+</body>
+</html>
