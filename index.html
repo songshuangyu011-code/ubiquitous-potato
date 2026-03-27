@@ -358,11 +358,29 @@
  .pb-close-btn{top:8px;right:8px;width:32px;height:32px;}
 
  /* --- COLLAGE NOTEBOOK --- */
- .collage-notebook{padding:20px 15px 20px 50px;min-height:400px;}
- .collage-notebook::before{left:38px;}
- .notebook-title{font-size:11px;}
- .sticker{font-size:clamp(24px,4vw,40px) !important;}
- .text-note{font-size:14px !important;padding:8px 10px !important;min-width:80px !important;}
+ /* --- COLLAGE NOTEBOOK --- */
+.collage-notebook{
+  padding:20px 15px 20px 50px;min-height:400px;
+  overflow:hidden !important;  /* ★ 防止右滑 */
+}
+.collage-notebook::before{left:38px;}
+.notebook-title{font-size:11px;}
+.collage-area{
+  min-height:360px !important;
+  position:relative !important;
+  overflow:hidden !important;  /* ★ 防止内容溢出 */
+}
+.sticker{font-size:clamp(24px,4vw,40px) !important;}
+.text-note{font-size:14px !important;padding:8px 10px !important;min-width:80px !important;max-width:140px !important;white-space:normal !important;}
+
+/* ★ 手机端：通过 JS 设置初始位置，CSS 只限制边界 ★ */
+.collage-area .sticker,
+.collage-area .text-note {
+  max-width: calc(100% - 20px);
+}
+
+/* 上传按钮也不要跑出去 */
+.upload-btn{right:10px !important;bottom:10px !important;}
 
  /* --- MESSAGE BOARD --- */
  #msgboard{padding:60px 15px;}
@@ -379,17 +397,18 @@
 
 /* ====== 超小屏 (iPhone SE等) ====== */
 @media(max-width:380px){
- .hero-title{font-size:20px;}
- .photo-wall{max-width:320px !important;gap:4px 6px !important;}
- .frame-polaroid .photo-img,
- .frame-win98  .photo-img,
- .frame-glitter .photo-img{height:100px !important;}
- .members-grid{max-width:320px !important;gap:8px !important;}
- .member-photo{height:110px !important;}
- .member-card:last-child{width:46% !important;min-width:140px !important;}
- .flip-phone{width:190px;}
- .pb-dialog{padding:10px;}
- .nav-logo{font-size:9px;}
+  .hero-title{font-size:20px;}
+  .photo-wall{max-width:320px !important;gap:4px 6px !important;}
+  .frame-polaroid .photo-img,
+  .frame-win98  .photo-img,
+  .frame-glitter .photo-img{height:100px !important;}
+  .members-grid{max-width:320px !important;gap:8px !important;}
+  .member-photo{height:110px !important;}
+  .member-card:last-child{width:46% !important;min-width:140px !important;}
+  .flip-phone{width:190px;}
+  .pb-dialog{padding:10px;}
+  .nav-logo{font-size:9px;}
+  .collage-notebook{padding:15px 10px 15px 42px !important;}
 }
  </style>
 </head>
@@ -679,6 +698,49 @@ document.getElementById('nextBtn').addEventListener('click',()=>playSong((curren
  area.querySelectorAll('.collage-item').forEach(makeDraggable);
  document.getElementById('uploadBtn').addEventListener('click',()=>document.getElementById('fileInput').click());
  document.getElementById('fileInput').addEventListener('change',function(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(ev){const div=document.createElement('div');div.className='collage-item';div.setAttribute('data-draggable','');div.style.cssText=`top:${50+Math.random()*200}px;left:${80+Math.random()*300}px;`;const img=document.createElement('img');img.src=ev.target.result;img.style.maxWidth='180px';img.style.maxHeight='180px';img.style.borderRadius='6px';img.style.boxShadow='3px 3px 12px rgba(0,0,0,.15)';div.appendChild(img);area.insertBefore(div,document.getElementById('uploadBtn'));makeDraggable(div);};reader.readAsDataURL(file);e.target.value='';});
+/* ★ 手机端：把超出可见区域的贴纸拉回来 ★ */
+ function fixMobileStickers(){
+   if(window.innerWidth > 768) return;
+
+   const areaRect = area.getBoundingClientRect();
+   const areaW = area.offsetWidth;
+   const areaH = area.offsetHeight;
+
+   const items = area.querySelectorAll('.sticker, .text-note, .collage-item');
+   items.forEach(function(el){
+     const elW = el.offsetWidth || 40;
+     const elH = el.offsetHeight || 40;
+
+     let left = parseInt(el.style.left) || 0;
+     let top  = parseInt(el.style.top)  || 0;
+
+     // 超出右边界 → 拉回来
+     const maxLeft = areaW - elW - 10;
+     if(left > maxLeft){
+       left = Math.max(5, maxLeft);
+     }
+     // 超出左边界
+     if(left < 0) left = 5;
+
+     // 超出下边界 → 拉回来
+     const maxTop = areaH - elH - 10;
+     if(top > maxTop){
+       top = Math.max(5, maxTop);
+     }
+     // 超出上边界
+     if(top < 0) top = 5;
+
+     el.style.left = left + 'px';
+     el.style.top  = top  + 'px';
+   });
+ }
+
+ // 页面加载完执行
+ window.addEventListener('load', fixMobileStickers);
+ // 屏幕旋转时也执行
+ window.addEventListener('resize', fixMobileStickers);
+ // 立即执行一次（DOM 已经就绪）
+ fixMobileStickers();
 })();
 
 /* ═══════════════════════════════════════
@@ -1007,6 +1069,16 @@ _prevTmp.width = PHOTO_W;
 _prevTmp.height = PHOTO_H;
 const _prevTmpCtx = _prevTmp.getContext('2d');
 
+function startPreview(){
+    prevCvs.width = TOTAL_W;
+    prevCvs.height = TOTAL_H;
+    isPreviewActive = true;
+    previewLoop();
+}
+
+function stopPreview(){
+    isPreviewActive = false;
+}
 function previewLoop(){
   if(!isPreviewActive) return;
 
