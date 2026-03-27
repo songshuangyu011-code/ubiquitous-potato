@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
  <meta charset="UTF-8" />
- <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
  <title>NewJeans World</title>
  <link rel="preconnect" href="https://fonts.googleapis.com" />
  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -234,114 +234,162 @@
 /* ====== MOBILE ====== */
 @media(max-width:768px){
 
-  /* --- NAV --- */
-  nav{padding:0 15px;height:48px;}
-  .nav-hamburger{display:block;}
-  .nav-links{
-    display:none;flex-direction:column;
-    position:absolute;top:48px;left:0;right:0;
-    background:rgba(184,232,224,.97);backdrop-filter:blur(12px);
-    border-bottom:2px solid var(--phone-pink);
-    padding:10px 15px;gap:6px;z-index:999;
-  }
-  .nav-links.open{display:flex;}
-  .nav-links a{font-size:16px;padding:10px 14px;text-align:center;border-radius:8px;}
+ /* --- NAV --- */
+ nav{padding:0 15px;height:48px;}
+ .nav-hamburger{display:block;}
+ .nav-links{
+   display:none;flex-direction:column;
+   position:absolute;top:48px;left:0;right:0;
+   background:rgba(184,232,224,.97);backdrop-filter:blur(12px);
+   border-bottom:2px solid var(--phone-pink);
+   padding:10px 15px;gap:6px;z-index:999;
+ }
+ .nav-links.open{display:flex;}
+ .nav-links a{font-size:16px;padding:10px 14px;text-align:center;border-radius:8px;}
 
-  /* --- HERO --- */
-  #home{padding:70px 15px 30px;min-height:auto;}
-  .hero-title{font-size:clamp(22px,7vw,40px);}
-  .hero-sub{font-size:clamp(16px,4vw,24px);margin-bottom:30px;}
+ /* --- HERO --- */
+ #home{padding:70px 15px 30px;min-height:auto;}
+ .hero-title{font-size:clamp(22px,7vw,40px);}
+ .hero-sub{font-size:clamp(16px,4vw,24px);margin-bottom:20px;}
 
-  /* --- PHOTO WALL: 改成纵向滚动列表 --- */
-  .photo-wall{
-    height:auto !important;min-height:auto !important;
-    display:flex;flex-direction:column;align-items:center;gap:20px;
-    perspective:none;
-  }
-  .photo-card{
-    position:relative !important;
-    top:auto !important;left:auto !important;
-    width:85vw !important;max-width:320px !important;
-    transform:rotate(0deg) !important;
-    z-index:1 !important;
-  }
-  .photo-card:hover{
-    transform:scale(1.03) !important;
-    box-shadow:0 12px 30px rgba(255,110,199,.3) !important;
-  }
-  .frame-polaroid .photo-img,
-  .frame-win98 .photo-img,
-  .frame-glitter .photo-img{height:200px;}
+ /* ═══════════════════════════════════════
+    PHOTO WALL — 2列散落拼贴风
+ ═══════════════════════════════════════ */
+ .photo-wall{
+   height:auto !important;
+   min-height:auto !important;
+   display:grid !important;
+   grid-template-columns:1fr 1fr !important;
+   gap:6px 8px !important;
+   padding:0 5px !important;
+   perspective:none !important;
+   max-width:400px !important;
+   margin:0 auto !important;
+ }
+ .photo-card{
+   position:relative !important;
+   top:auto !important;left:auto !important;
+   width:100% !important;max-width:none !important;
+   margin:0 !important;
+ }
+ /* 每张卡片给不同的旋转+偏移，模拟散落感 */
+ .photo-card:nth-child(1){transform:rotate(-4deg) translateY(6px) !important;z-index:2 !important;}
+ .photo-card:nth-child(2){transform:rotate(3deg) translateY(-4px) !important;z-index:3 !important;}
+ .photo-card:nth-child(3){transform:rotate(2deg) translateY(8px) !important;z-index:1 !important;}
+ .photo-card:nth-child(4){transform:rotate(-5deg) translateY(-6px) !important;z-index:4 !important;}
+ .photo-card:nth-child(5){transform:rotate(3deg) translateY(4px) !important;z-index:5 !important;}
+ .photo-card:nth-child(6){transform:rotate(-2deg) translateY(-5px) !important;z-index:2 !important;}
+ .photo-card:hover{
+   transform:scale(1.06) rotate(0deg) !important;
+   box-shadow:0 12px 30px rgba(255,110,199,.35) !important;
+   z-index:99 !important;
+ }
+ .frame-polaroid .photo-img,
+ .frame-win98  .photo-img,
+ .frame-glitter .photo-img{height:130px !important;}
+ .frame-polaroid{padding:8px 8px 30px !important;}
+ .frame-polaroid .photo-caption{font-size:14px !important;margin-top:4px !important;}
+ .frame-win98 .photo-caption{font-size:13px !important;padding:3px !important;}
+ .frame-win98 .win-titlebar span{font-size:6px !important;}
+ .frame-glitter .photo-caption{font-size:14px !important;}
 
-  /* --- MEMBERS --- */
-  .members-grid{gap:16px;}
-  .member-card{width:85vw;max-width:320px;}
-  .member-photo{height:200px;}
-  .member-name{font-size:10px;}
-  .member-desc{font-size:12px;}
+ /* ═══════════════════════════════════════
+    MEMBERS — 2列紧凑网格
+ ═══════════════════════════════════════ */
+ .members-grid{
+   display:grid !important;
+   grid-template-columns:1fr 1fr !important;
+   gap:10px !important;
+   max-width:380px !important;
+   margin:0 auto !important;
+ }
+ .member-card{
+   width:auto !important;max-width:none !important;
+ }
+ /* 第5张(最后一个成员)居中 */
+ .member-card:last-child{
+   grid-column:1 / -1;
+   justify-self:center;
+   width:48% !important;
+   min-width:160px !important;
+ }
+ .member-photo{height:140px !important;}
+ .member-info{padding:10px !important;}
+ .member-name{font-size:8px !important;}
+ .member-role{font-size:14px !important;}
+ .member-desc{font-size:11px !important;line-height:1.4 !important;
+   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+ }
 
-  /* --- MUSIC --- */
-  .music-layout{flex-direction:column;align-items:center;gap:24px;}
-  .flip-phone{width:220px;}
-  .phone-screen .album-art{width:90px;height:90px;font-size:32px;}
-  .phone-screen .song-title{font-size:7px;}
-  .phone-screen .phone-controls button{width:30px;height:30px;font-size:12px;}
-  .phone-screen .phone-controls button.play-btn{width:38px;height:38px;font-size:16px;}
-  .song-list-container{width:90vw;max-width:360px;}
-  .song-item{padding:8px 10px;gap:8px;}
-  .song-info .s-title{font-size:13px;}
-  .song-num{font-size:18px;}
-  .song-dur{font-size:16px;}
+ /* --- MUSIC --- */
+ .music-layout{flex-direction:column;align-items:center;gap:24px;}
+ .flip-phone{width:220px;}
+ .phone-screen .album-art{width:90px;height:90px;font-size:32px;}
+ .phone-screen .song-title{font-size:7px;}
+ .phone-screen .phone-controls button{width:30px;height:30px;font-size:12px;}
+ .phone-screen .phone-controls button.play-btn{width:38px;height:38px;font-size:16px;}
+ .song-list-container{width:90vw;max-width:360px;}
+ .song-item{padding:8px 10px;gap:8px;}
+ .song-info .s-title{font-size:13px;}
+ .song-num{font-size:18px;}
+ .song-dur{font-size:16px;}
 
-  /* --- PHOTO BOOTH --- */
-  #photoBooth{padding:60px 15px;}
-  .pb-open-btn{padding:12px 24px;font-size:10px;}
-  .pb-dialog{max-width:98vw;padding:14px;border-radius:14px;}
-  .pb-cam{max-width:95vw;}
-  .pb-print-area{max-width:95vw;}
-  .pb-sticker-canvas-wrap{max-width:95vw;}
-  .pb-sticker-bar{gap:4px;padding:6px;}
-  .pb-sticker-pick{width:38px;height:38px;font-size:24px;}
-  .pb-sticker-pick img{width:26px !important;height:26px !important;}
-  .pb-step-title{font-size:9px;}
-  .pb-sel-btn{padding:4px 10px;font-size:14px;}
-  .pb-shutter-btn{width:54px;height:54px;font-size:20px;}
-  .pb-action-btn{padding:6px 14px;font-size:16px;}
-  .pb-close-btn{top:8px;right:8px;width:32px;height:32px;}
+ /* ═══════════════════════════════════════
+    PHOTO BOOTH — 防止拍立得框移动
+ ═══════════════════════════════════════ */
+ #photoBooth{padding:60px 15px;}
+ .pb-open-btn{padding:12px 24px;font-size:10px;}
+ .pb-dialog{
+   max-width:98vw;padding:14px;border-radius:14px;
+   overflow-y:auto;-webkit-overflow-scrolling:touch;
+ }
+ .pb-cam{max-width:95vw;touch-action:none;}
+ .pb-cam-container{touch-action:none;}
+ #pbPreviewCanvas{touch-action:none;}
+ .pb-print-area{max-width:95vw;}
+ .pb-sticker-canvas-wrap{max-width:95vw;}
+ .pb-sticker-bar{gap:4px;padding:6px;}
+ .pb-sticker-pick{width:38px;height:38px;font-size:24px;}
+ .pb-sticker-pick img{width:26px !important;height:26px !important;}
+ .pb-step-title{font-size:9px;}
+ .pb-sel-btn{padding:4px 10px;font-size:14px;}
+ .pb-shutter-btn{width:54px;height:54px;font-size:20px;}
+ .pb-action-btn{padding:6px 14px;font-size:16px;}
+ .pb-close-btn{top:8px;right:8px;width:32px;height:32px;}
 
-  /* --- COLLAGE NOTEBOOK --- */
-  .collage-notebook{
-    padding:20px 15px 20px 50px;
-    min-height:400px;
-  }
-  .collage-notebook::before{left:38px;}
-  .notebook-title{font-size:11px;}
-  .sticker{font-size:clamp(24px,4vw,40px) !important;}
-  .text-note{font-size:14px !important;padding:8px 10px !important;min-width:80px !important;}
+ /* --- COLLAGE NOTEBOOK --- */
+ .collage-notebook{padding:20px 15px 20px 50px;min-height:400px;}
+ .collage-notebook::before{left:38px;}
+ .notebook-title{font-size:11px;}
+ .sticker{font-size:clamp(24px,4vw,40px) !important;}
+ .text-note{font-size:14px !important;padding:8px 10px !important;min-width:80px !important;}
 
-  /* --- MESSAGE BOARD --- */
-  #msgboard{padding:60px 15px;}
-  .msg-input-area{gap:8px;}
-  .msg-input-area input{min-width:0;width:100%;padding:10px 14px;font-size:14px;}
-  .msg-input-area button{padding:10px 20px;font-size:9px;width:100%;}
-  .danmaku-stage{height:180px;border-radius:12px;}
-  .danmaku{font-size:18px !important;}
+ /* --- MESSAGE BOARD --- */
+ #msgboard{padding:60px 15px;}
+ .msg-input-area{gap:8px;}
+ .msg-input-area input{min-width:0;width:100%;padding:10px 14px;font-size:14px;}
+ .msg-input-area button{padding:10px 20px;font-size:9px;width:100%;}
+ .danmaku-stage{height:180px;border-radius:12px;}
+ .danmaku{font-size:18px !important;}
 
-  /* --- SECTION TITLES --- */
-  .section-title{font-size:clamp(12px,3.5vw,20px);margin-bottom:30px;}
-
-  /* --- FOOTER --- */
-  footer{padding:24px 15px;font-size:15px;}
+ /* --- SECTION TITLES --- */
+ .section-title{font-size:clamp(12px,3.5vw,20px);margin-bottom:30px;}
+ footer{padding:24px 15px;font-size:15px;}
 }
 
 /* ====== 超小屏 (iPhone SE等) ====== */
 @media(max-width:380px){
-  .hero-title{font-size:20px;}
-  .photo-card{max-width:280px !important;}
-  .flip-phone{width:190px;}
-  .member-card{max-width:280px;}
-  .pb-dialog{padding:10px;}
-  .nav-logo{font-size:9px;}
+ .hero-title{font-size:20px;}
+ .photo-wall{max-width:320px !important;gap:4px 6px !important;}
+ .frame-polaroid .photo-img,
+ .frame-win98  .photo-img,
+ .frame-glitter .photo-img{height:100px !important;}
+ .members-grid{max-width:320px !important;gap:8px !important;}
+ .member-photo{height:110px !important;}
+ .member-card:last-child{width:46% !important;min-width:140px !important;}
+ .flip-phone{width:190px;}
+ .pb-dialog{padding:10px;}
+ .nav-logo{font-size:9px;}
 }
  </style>
 </head>
@@ -904,96 +952,142 @@ STICKERS.forEach(s=>{
 
  /* ─── CAMERA ─── */
  async function startCamera(){
+ try{
+   if(stream) stream.getTracks().forEach(t=>t.stop());
+   /* ★ 手机切换后置摄像头需要 exact ★ */
+   const videoConstraints = {
+     width:{ideal:640}, height:{ideal:854}
+   };
+   if(facingMode === 'environment'){
+     videoConstraints.facingMode = {exact:'environment'};
+   } else {
+     videoConstraints.facingMode = 'user';
+   }
+   stream = await navigator.mediaDevices.getUserMedia({video:videoConstraints, audio:false});
+   video.srcObject = stream;
+   await video.play();
+ } catch(err){
+   console.error('Camera error:',err);
+   /* 后置摄像头失败时，回退到不带 exact 的模式 */
+   if(facingMode === 'environment'){
+     try{
+       stream = await navigator.mediaDevices.getUserMedia({
+         video:{facingMode:'environment',width:{ideal:640},height:{ideal:854}},
+         audio:false
+       });
+       video.srcObject = stream;
+       await video.play();
+     } catch(e2){
+  console.error('Fallback camera error:',e2);
+  // ★ 后置摄像头完全失败，自动回退到前置 ★
+  facingMode = 'user';
   try{
-    if(stream) stream.getTracks().forEach(t=>t.stop());
-    stream = await navigator.mediaDevices.getUserMedia({ video:{facingMode, width:{ideal:640}, height:{ideal:854}}, audio:false });
+    stream = await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:'user', width:{ideal:640}, height:{ideal:854}},
+      audio:false
+    });
     video.srcObject = stream;
     await video.play();
-  } catch(err){ console.error('Camera error:',err); alert('Unable to access camera.'); }
+  }catch(e3){
+    alert('Unable to access camera.');
+  }
+}
+   } else {
+     alert('Unable to access camera.');
+   }
+ }
 }
  function stopCamera(){ if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;} video.srcObject=null; }
  flipBtn.addEventListener('click',()=>{ facingMode=facingMode==='user'?'environment':'user'; startCamera(); });
 
  /* ─── PREVIEW LOOP (Step 1) ─── */
- prevCvs.width = TOTAL_W;
- prevCvs.height = TOTAL_H;
+ /* ★ 在 previewLoop 外面创建一个复用的离屏 canvas ★ */
+const _prevTmp = document.createElement('canvas');
+_prevTmp.width = PHOTO_W;
+_prevTmp.height = PHOTO_H;
+const _prevTmpCtx = _prevTmp.getContext('2d');
 
- function previewLoop(){
+function previewLoop(){
   if(!isPreviewActive) return;
 
-  /* 创建临时画面：摄像头（镜像） */
   let videoSource = null;
   if(video.readyState >= 2){
-   const vw=video.videoWidth, vh=video.videoHeight;
-   const targetR = PHOTO_W / PHOTO_H;
-   const videoR = vw/vh;
-   let sx,sy,sw,sh;
-   if(videoR > targetR){ sh=vh; sw=vh*targetR; sx=(vw-sw)/2; sy=0; }
-   else { sw=vw; sh=vw/targetR; sx=0; sy=(vh-sh)/2; }
+    const vw=video.videoWidth, vh=video.videoHeight;
+    const targetR = PHOTO_W / PHOTO_H;
+    const videoR = vw/vh;
+    let sx,sy,sw,sh;
+    if(videoR > targetR){ sh=vh; sw=vh*targetR; sx=(vw-sw)/2; sy=0; }
+    else { sw=vw; sh=vw/targetR; sx=0; sy=(vh-sh)/2; }
 
-   /* 用隐藏 canvas 做镜像裁剪 */
-   const tmpCvs = document.createElement('canvas');
-   tmpCvs.width = PHOTO_W; tmpCvs.height = PHOTO_H;
-   const tmpCtx = tmpCvs.getContext('2d');
-   tmpCtx.save();
-   tmpCtx.translate(PHOTO_W,0); tmpCtx.scale(-1,1);
-   tmpCtx.drawImage(video, sx,sy,sw,sh, 0,0,PHOTO_W,PHOTO_H);
-   tmpCtx.restore();
-   videoSource = tmpCvs;
+    _prevTmpCtx.clearRect(0, 0, PHOTO_W, PHOTO_H);
+
+    if(facingMode === 'user'){
+      _prevTmpCtx.save();
+      _prevTmpCtx.translate(PHOTO_W,0);
+      _prevTmpCtx.scale(-1,1);
+      _prevTmpCtx.drawImage(video, sx,sy,sw,sh, 0,0,PHOTO_W,PHOTO_H);
+      _prevTmpCtx.restore();
+    } else {
+      _prevTmpCtx.drawImage(video, sx,sy,sw,sh, 0,0,PHOTO_W,PHOTO_H);
+    }
+    videoSource = _prevTmp;
   }
 
   drawPolaroid(prevCtx, videoSource, memberImg, null, -1, false);
   requestAnimationFrame(previewLoop);
- }
-
- function startPreview(){ isPreviewActive=true; previewLoop(); }
- function stopPreview(){ isPreviewActive=false; }
+}
 
  /* ─── CAPTURE (Shutter) ─── */
  shutterBtn.addEventListener('click', async()=>{
-  shutterBtn.disabled = true;
+ shutterBtn.disabled = true;
 
-  /* 倒计时 */
-  for(let i=3;i>=1;i--){ countdown.textContent=i; countdown.classList.add('active'); await sleep(800); }
+ for(let i=3; i>=1; i--){
+  countdown.textContent = i;
+  countdown.classList.add('active');
+  await sleep(800);
   countdown.classList.remove('active');
-
-  /* 闪光 */
-  flash.style.transition='none'; flash.style.opacity='1'; await sleep(100);
-  flash.style.transition='opacity 0.5s'; flash.style.opacity='0';
-
-  /* 捕获帧 — 和预览完全相同的绘制逻辑 */
-  const vw=video.videoWidth, vh=video.videoHeight;
-  const targetR = PHOTO_W / PHOTO_H;
-  const videoR = vw/vh;
-  let sx,sy,sw,sh;
-  if(videoR>targetR){sh=vh;sw=vh*targetR;sx=(vw-sw)/2;sy=0;}
-  else{sw=vw;sh=vw/targetR;sx=0;sy=(vh-sh)/2;}
-
-  capturedPhoto = document.createElement('canvas');
-  capturedPhoto.width = PHOTO_W; capturedPhoto.height = PHOTO_H;
-  const ctx = capturedPhoto.getContext('2d');
-  ctx.save(); ctx.translate(PHOTO_W,0); ctx.scale(-1,1);
-  ctx.drawImage(video, sx,sy,sw,sh, 0,0,PHOTO_W,PHOTO_H);
-  ctx.restore();
-
-  /* 把成员也画到 capturedPhoto 上，这样贴纸编辑时成员已固定 */
-if(memberImg && memberImg.complete && memberImg.naturalWidth > 0){
-    const cfg = MEMBER_CONFIG[currentMember.name] || DEFAULT_CONFIG;
-    const mh = PHOTO_H * cfg.scale;
-    const mw = mh * (memberImg.naturalWidth / memberImg.naturalHeight);
-    ctx.drawImage(memberImg, PHOTO_W - mw - cfg.offsetX, PHOTO_H - mh - cfg.offsetY, mw, mh);
+  await sleep(200);
 }
 
-  stopPreview();
+ flash.style.transition='none'; flash.style.opacity='1'; await sleep(100);
+ flash.style.transition='opacity 0.5s'; flash.style.opacity='0';
 
-  /* 渲染到 Step 2 结果 Canvas */
-  resultCvs.width = TOTAL_W; resultCvs.height = TOTAL_H;
-  drawPolaroid(resultCvs.getContext('2d'), capturedPhoto, null, null, -1, false);
+ const vw=video.videoWidth, vh=video.videoHeight;
+ const targetR = PHOTO_W / PHOTO_H;
+ const videoR = vw/vh;
+ let sx,sy,sw,sh;
+ if(videoR>targetR){sh=vh;sw=vh*targetR;sx=(vw-sw)/2;sy=0;}
+ else{sw=vw;sh=vw/targetR;sx=0;sy=(vh-sh)/2;}
 
-  goToStep(2);
-  polaroid.classList.remove('printing'); void polaroid.offsetHeight; polaroid.classList.add('printing');
-  shutterBtn.disabled = false;
- });
+ capturedPhoto = document.createElement('canvas');
+ capturedPhoto.width = PHOTO_W; capturedPhoto.height = PHOTO_H;
+ const ctx = capturedPhoto.getContext('2d');
+
+ /* ★ 只有前置摄像头才镜像 ★ */
+ if(facingMode === 'user'){
+   ctx.save(); ctx.translate(PHOTO_W,0); ctx.scale(-1,1);
+   ctx.drawImage(video, sx,sy,sw,sh, 0,0,PHOTO_W,PHOTO_H);
+   ctx.restore();
+ } else {
+   ctx.drawImage(video, sx,sy,sw,sh, 0,0,PHOTO_W,PHOTO_H);
+ }
+
+ if(memberImg && memberImg.complete && memberImg.naturalWidth > 0){
+   const cfg = MEMBER_CONFIG[currentMember.name] || DEFAULT_CONFIG;
+   const mh = PHOTO_H * cfg.scale;
+   const mw = mh * (memberImg.naturalWidth / memberImg.naturalHeight);
+   ctx.drawImage(memberImg, PHOTO_W - mw - cfg.offsetX, PHOTO_H - mh - cfg.offsetY, mw, mh);
+ }
+
+ stopPreview();
+
+ resultCvs.width = TOTAL_W; resultCvs.height = TOTAL_H;
+ drawPolaroid(resultCvs.getContext('2d'), capturedPhoto, null, null, -1, false);
+
+ goToStep(2);
+ polaroid.classList.remove('printing'); void polaroid.offsetHeight; polaroid.classList.add('printing');
+ shutterBtn.disabled = false;
+});
 
  /* ─── STEP NAVIGATION ─── */
  function goToStep(n){
@@ -1014,6 +1108,10 @@ if(memberImg && memberImg.complete && memberImg.naturalWidth > 0){
  retake2Btn.addEventListener('click',()=>{ isStickerActive=false; startCamera(); startPreview(); goToStep(1); });
 
  /* ─── OPEN / CLOSE ─── */
+ /* ★ 防止手机端触摸 canvas 导致弹窗滚动 ★ */
+document.getElementById('pbCamWrap').addEventListener('touchmove', function(e){
+ e.preventDefault();
+}, {passive:false});
  openBtn.addEventListener('click',()=>{
   modal.classList.add('active');
   document.body.style.overflow='hidden';
