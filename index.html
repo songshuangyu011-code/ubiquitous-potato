@@ -652,35 +652,100 @@ document.querySelectorAll('.photo-card').forEach(card=>{
 });
 
 /* ═══════════════════════════════════════
-   MUSIC PLAYER
+   MUSIC PLAYER — 跳转B站官方MV
 ═══════════════════════════════════════ */
 const songs=[
- {title:'Attention',album:'NewJeans 1st EP',dur:'3:00',emoji:'🎧'},
- {title:'Hype Boy',album:'NewJeans 1st EP',dur:'2:59',emoji:'🔥'},
- {title:'Cookie',album:'NewJeans 1st EP',dur:'3:14',emoji:'🍪'},
- {title:'Hurt',album:'NewJeans 1st EP',dur:'2:52',emoji:'💔'},
- {title:'Ditto',album:'OMG',dur:'3:06',emoji:'👻'},
- {title:'OMG',album:'OMG',dur:'3:31',emoji:'😱'},
- {title:'Super Shy',album:'Get Up',dur:'2:34',emoji:'🫣'},
- {title:'ETA',album:'Get Up',dur:'2:32',emoji:'⏰'},
- {title:'Cool With You',album:'Get Up',dur:'2:58',emoji:'💙'},
- {title:'New Jeans',album:'Get Up',dur:'2:45',emoji:'👖'},
- {title:'ASAP',album:'How Sweet',dur:'2:56',emoji:'⚡'},
- {title:'Bubble Gum',album:'How Sweet',dur:'3:08',emoji:'🫧'},
- {title:'How Sweet',album:'How Sweet',dur:'2:52',emoji:'🍯'},
- {title:'Right Now',album:'Supernatural',dur:'2:44',emoji:'✨'},
- {title:'Supernatural',album:'Supernatural',dur:'3:15',emoji:'🌙'},
+ {title:'Attention',album:'NewJeans 1st EP',dur:'3:00',emoji:'🎧',
+  url:'https://www.bilibili.com/video/BV1Ud4y1e7on/'},
+ {title:'Hype Boy',album:'NewJeans 1st EP',dur:'2:59',emoji:'🔥',
+  url:'https://www.bilibili.com/video/BV1x14y1T7UC/'},
+ {title:'Cookie',album:'NewJeans 1st EP',dur:'3:14',emoji:'🍪',
+  url:'https://www.bilibili.com/video/BV1AK411r7Bq/'},
+ {title:'Hurt',album:'NewJeans 1st EP',dur:'2:52',emoji:'💔',
+  url:'https://www.bilibili.com/video/BV1se4y1M7vH/'},
+ {title:'Ditto',album:'OMG',dur:'3:06',emoji:'👻',
+  url:'https://www.bilibili.com/video/BV1XM4y1E777/'},
+ {title:'OMG',album:'OMG',dur:'3:31',emoji:'😱',
+  url:'https://www.bilibili.com/video/BV1Xz4y1H7Dc/'},
+ {title:'Super Shy',album:'Get Up',dur:'2:34',emoji:'🫣',
+  url:'https://www.bilibili.com/video/BV1os4y1z7XJ/'},
+ {title:'ETA',album:'Get Up',dur:'2:32',emoji:'⏰',
+  url:'https://www.bilibili.com/video/BV1gF411X7Qe/'},
+ {title:'Cool With You',album:'Get Up',dur:'2:58',emoji:'💙',
+  url:'https://www.bilibili.com/video/BV1E94y1q7mj/'},
+ {title:'New Jeans',album:'Get Up',dur:'2:45',emoji:'👖',
+  url:'https://www.bilibili.com/video/BV14k4y1K7Lp/'},
+ {title:'ASAP',album:'How Sweet',dur:'2:56',emoji:'⚡',
+  url:'https://www.bilibili.com/video/BV1xm4y1j79u/'},
+ {title:'Bubble Gum',album:'How Sweet',dur:'3:08',emoji:'🫧',
+  url:'https://www.bilibili.com/video/BV1Ym41127Qi/'},
+ {title:'How Sweet',album:'How Sweet',dur:'2:52',emoji:'🍯',
+  url:'https://www.bilibili.com/video/BV1zH4y1u7NM/'},
+ {title:'Right Now',album:'Supernatural',dur:'2:44',emoji:'✨',
+  url:'https://www.bilibili.com/video/BV1RE421P7Mg/'},
+ {title:'Supernatural',album:'Supernatural',dur:'3:15',emoji:'🌙',
+  url:'https://www.bilibili.com/video/BV154421D7Nv/'},
 ];
-let currentSong=0,isPlaying=false;
+let currentSong=0;
 const listEl=document.getElementById('songListScroll');
-songs.forEach((s,i)=>{const d=document.createElement('div');d.className='song-item'+(i===0?' active':'');d.innerHTML=`<div class="song-num">${String(i+1).padStart(2,'0')}</div><div class="song-info"><div class="s-title">${s.emoji} ${s.title}</div><div class="s-album">${s.album}</div></div><div class="song-dur">${s.dur}</div>`;d.addEventListener('click',()=>playSong(i));listEl.appendChild(d);});
-const audioPlayer=document.getElementById('audio-player');
-const audioFiles={'Attention':'music/attention.mp3','Hype Boy':'music/hype-boy.mp3','Cookie':'music/cookie.mp3','Hurt':'music/hurt.mp3','Ditto':'music/ditto.mp3','OMG':'music/omg.mp3','Super Shy':'music/super-shy.mp3','ETA':'music/eta.mp3','Cool With You':'music/cool-with-you.mp3','New Jeans':'music/new-jeans.mp3','ASAP':'music/asap.mp3','Bubble Gum':'music/bubble-gum.mp3','How Sweet':'music/how-sweet.mp3','Right Now':'music/right-now.mp3','Supernatural':'music/supernatural.mp3'};
-function playSong(i){currentSong=i;const s=songs[i];document.getElementById('nowTitle').textContent=s.title;document.getElementById('albumArt').textContent=s.emoji;isPlaying=true;document.getElementById('playBtn').textContent='⏸';document.querySelectorAll('.song-item').forEach((el,idx)=>el.classList.toggle('active',idx===i));const pf=document.getElementById('progressFill');pf.style.animation='none';pf.offsetHeight;pf.style.animation='playProgress 8s linear infinite';if(audioFiles[s.title]){audioPlayer.src=audioFiles[s.title];audioPlayer.play().catch(e=>console.log('播放被拦截:',e));}}
-audioPlayer.addEventListener('ended',()=>playSong((currentSong+1)%songs.length));
-document.getElementById('playBtn').addEventListener('click',()=>{if(isPlaying){audioPlayer.pause();isPlaying=false;document.getElementById('playBtn').textContent='▶';}else{if(!audioPlayer.src||audioPlayer.src==='')playSong(0);else audioPlayer.play().catch(e=>console.log(e));isPlaying=true;document.getElementById('playBtn').textContent='⏸';}});
-document.getElementById('prevBtn').addEventListener('click',()=>playSong((currentSong-1+songs.length)%songs.length));
-document.getElementById('nextBtn').addEventListener('click',()=>playSong((currentSong+1)%songs.length));
+
+songs.forEach((s,i)=>{
+  const d=document.createElement('div');
+  d.className='song-item'+(i===0?' active':'');
+  d.innerHTML=`<div class="song-num">${String(i+1).padStart(2,'0')}</div><div class="song-info"><div class="s-title">${s.emoji} ${s.title}</div><div class="s-album">${s.album}</div></div><div class="song-dur">${s.dur}</div>`;
+  d.addEventListener('click',()=>openSong(i));
+  listEl.appendChild(d);
+});
+
+/* ★ 核心改动：点击歌曲 → 更新手机屏幕 + 跳转B站 ★ */
+function openSong(i){
+  currentSong=i;
+  const s=songs[i];
+  
+  /* 更新手机屏幕显示 */
+  document.getElementById('nowTitle').textContent=s.title;
+  document.getElementById('albumArt').textContent=s.emoji;
+  
+  /* 更新歌曲列表高亮 */
+  document.querySelectorAll('.song-item').forEach((el,idx)=>el.classList.toggle('active',idx===i));
+  
+  /* 重置进度条动画 */
+  const pf=document.getElementById('progressFill');
+  pf.style.animation='none';
+  pf.offsetHeight;
+  pf.style.animation='playProgress 8s linear infinite';
+  
+  /* ★ 打开B站MV ★ */
+  if(s.url){
+    window.open(s.url, '_blank');
+  }
+}
+
+/* 播放按钮 → 打开当前歌曲的B站链接 */
+document.getElementById('playBtn').addEventListener('click',()=>{
+  const s=songs[currentSong];
+  if(s.url){
+    window.open(s.url, '_blank');
+  }
+});
+
+/* 上一首/下一首 → 只切换显示，不自动跳转 */
+document.getElementById('prevBtn').addEventListener('click',()=>{
+  currentSong=(currentSong-1+songs.length)%songs.length;
+  const s=songs[currentSong];
+  document.getElementById('nowTitle').textContent=s.title;
+  document.getElementById('albumArt').textContent=s.emoji;
+  document.querySelectorAll('.song-item').forEach((el,idx)=>el.classList.toggle('active',idx===currentSong));
+});
+document.getElementById('nextBtn').addEventListener('click',()=>{
+  currentSong=(currentSong+1)%songs.length;
+  const s=songs[currentSong];
+  document.getElementById('nowTitle').textContent=s.title;
+  document.getElementById('albumArt').textContent=s.emoji;
+  document.querySelectorAll('.song-item').forEach((el,idx)=>el.classList.toggle('active',idx===currentSong));
+});
+
+/* 手机时间显示 */
 (function updatePhoneTime(){const n=new Date();document.getElementById('phoneTime').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');setTimeout(updatePhoneTime,30000);})();
 
 /* ═══════════════════════════════════════
