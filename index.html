@@ -819,18 +819,159 @@ try{if(window.supabase)supabaseClient=window.supabase.createClient(SUPABASE_URL,
 /* ═══════════════════════════════════════
    MESSAGE BOARD — DANMAKU
 ═══════════════════════════════════════ */
+/* ═══════════════════════════════════════
+ MESSAGE BOARD — DANMAKU（无限循环版）
+═══════════════════════════════════════ */
 (async function(){
  const stage=document.getElementById('danmakuStage'),input=document.getElementById('msgInput'),btn=document.getElementById('msgSendBtn');
  const colors=['#FF6EC7','#B967FF','#05D9E8','#FF9A3C','#ff85a2','#C6F806'];
- function fireDanmaku(text,color){const d=document.createElement('div');d.className='danmaku';d.textContent=text;d.style.top=Math.random()*85+'%';d.style.color=color||colors[Math.floor(Math.random()*colors.length)];d.style.fontSize=(18+Math.random()*10)+'px';d.style.animationDuration=(6+Math.random()*6)+'s';stage.appendChild(d);d.addEventListener('animationend',()=>d.remove());}
- if(!supabaseClient){const defaults=['NewJeans is the best! 💕','Attention!!! 🎧','Hype Boy 🔥','Super Shy 🫣','I love bunnies 🐰','OMG OMG OMG 😱'];defaults.forEach((t,i)=>setTimeout(()=>fireDanmaku(t),2000+i*2500));function send(){const t=input.value.trim();if(!t)return;input.value='';fireDanmaku(t);}btn.addEventListener('click',send);input.addEventListener('keydown',e=>{if(e.key==='Enter')send();});return;}
- async function send(){const t=input.value.trim();if(!t)return;const color=colors[Math.floor(Math.random()*colors.length)];input.value='';const{error}=await supabaseClient.from('messages').insert({content:t,color:color});if(error){console.error('弹幕发送失败:',error.message);fireDanmaku(t,color);}}
- btn.addEventListener('click',send);input.addEventListener('keydown',e=>{if(e.key==='Enter')send();});
- const{data:recentMsgs,error:fetchError}=await supabaseClient.from('messages').select('*').order('created_at',{ascending:false}).limit(50);
- if(fetchError)console.error('拉取历史弹幕失败:',fetchError.message);
- if(recentMsgs&&recentMsgs.length>0)recentMsgs.reverse().forEach((msg,i)=>setTimeout(()=>fireDanmaku(msg.content,msg.color),i*800));
- else['NewJeans is the best! 💕','Attention!!! 🎧','Hype Boy 🔥','Super Shy 🫣','I love bunnies 🐰','OMG OMG OMG 😱'].forEach((t,i)=>setTimeout(()=>fireDanmaku(t),2000+i*2500));
- supabaseClient.channel('danmaku-realtime').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},(payload)=>fireDanmaku(payload.new.content,payload.new.color)).subscribe(s=>console.log('Realtime:',s));
+
+ /* ★ 弹幕池：所有历史弹幕存在这里，循环播放 ★ */
+ let danmakuPool = [];
+ let loopIndex = 0;
+ let loopTimer = null;
+
+ function fireDanmaku(text,color){
+   const d=document.createElement('div');
+   d.className='danmaku';
+   d.textContent=text;
+   d.style.top=Math.random()*85+'%';
+   d.style.color=color||colors[Math.floor(Math.random()*colors.length)];
+   d.style.fontSize=(18+Math.random()*10)+'px';
+   d.style.animationDuration=(6+Math.random()*6)+'s';
+   stage.appendChild(d);
+   d.addEventListener('animationend',()=>d.remove());
+ }
+
+ /* ★ 核心：无限循环发射弹幕 ★ */
+ function startLoop(){
+   if(danmakuPool.length === 0) return;
+
+   function fireNext(){
+     if(danmakuPool.length === 0) return;
+
+     // 到末尾了 → 回到开头，打乱顺序
+     if(loopIndex >= danmakuPool.length){
+       loopIndex = 0;
+       // 打乱顺序，这样每轮看起来不一样
+       danmakuPool.sort(()=> Math.random() - 0.5);
+     }
+
+     // 每次同时发射 2~3 条
+const batch = 2 + Math.floor(Math.random() * 2); // 2 或 3 条
+for (let i = 0; i < batch; i++) {
+  if (loopIndex >= danmakuPool.length) {
+    loopIndex = 0;
+    danmakuPool.sort(() => Math.random() - 0.5);
+  }
+  const msg = danmakuPool[loopIndex];
+  // 每条之间错开 200ms，避免完全重叠
+  setTimeout(() => {
+    fireDanmaku(msg.content, msg.color);
+  }, i * 200);
+  loopIndex++;
+}
+
+     // 随机间隔 0.5~1.5 秒，密度更高
+const delay = 500 + Math.random() * 1000;
+     loopTimer = setTimeout(fireNext, delay);
+   }
+
+   // 停掉旧的循环（防止重复启动）
+   if(loopTimer) clearTimeout(loopTimer);
+   loopIndex = 0;
+   fireNext();
+ }
+
+ /* ★ 新弹幕实时加入池子 ★ */
+ function addToPool(content, color){
+   danmakuPool.push({ content, color });
+ }
+
+ /* ── 默认弹幕（Supabase 不可用时的备用） ── */
+ const defaults = [
+   {content:'NewJeans is the best! 💕', color:'#FF6EC7'},
+   {content:'Attention!!! 🎧', color:'#B967FF'},
+   {content:'Hype Boy 🔥', color:'#FF9A3C'},
+   {content:'Super Shy 🫣', color:'#05D9E8'},
+   {content:'I love bunnies 🐰', color:'#ff85a2'},
+   {content:'OMG OMG OMG 😱', color:'#C6F806'},
+   {content:'Ditto 👻', color:'#B967FF'},
+   {content:'How Sweet 🍯', color:'#FF9A3C'},
+   {content:'Cookie 🍪', color:'#FF6EC7'},
+   {content:'Supernatural 🌙', color:'#05D9E8'},
+ ];
+
+ /* ── 没有 Supabase 的情况 ── */
+ if(!supabaseClient){
+   danmakuPool = defaults.slice();
+   startLoop();
+
+   function send(){
+     const t=input.value.trim();
+     if(!t) return;
+     input.value='';
+     const color = colors[Math.floor(Math.random()*colors.length)];
+     fireDanmaku(t, color);       // 立即显示
+     addToPool(t, color);          // 加入循环池
+   }
+   btn.addEventListener('click',send);
+   input.addEventListener('keydown',e=>{if(e.key==='Enter')send();});
+   return;
+ }
+
+ /* ── 有 Supabase 的情况 ── */
+
+ /* 发送弹幕 */
+ async function send(){
+   const t=input.value.trim();
+   if(!t) return;
+   const color=colors[Math.floor(Math.random()*colors.length)];
+   input.value='';
+   const{error}=await supabaseClient.from('messages').insert({content:t,color:color});
+   if(error){
+     console.error('弹幕发送失败:',error.message);
+     fireDanmaku(t,color);
+     addToPool(t, color);
+   }
+   // 成功的话，realtime 订阅会自动触发显示
+ }
+ btn.addEventListener('click',send);
+ input.addEventListener('keydown',e=>{if(e.key==='Enter')send();});
+
+ /* 拉取历史弹幕 */
+ const{data:recentMsgs,error:fetchError}=await supabaseClient
+   .from('messages')
+   .select('*')
+   .order('created_at',{ascending:false})
+   .limit(50);
+
+ if(fetchError) console.error('拉取历史弹幕失败:',fetchError.message);
+
+ if(recentMsgs && recentMsgs.length > 0){
+   // 把历史弹幕加入池子
+   recentMsgs.reverse().forEach(msg=>{
+     danmakuPool.push({ content: msg.content, color: msg.color });
+   });
+ } else {
+   // 没有历史弹幕，用默认的
+   danmakuPool = defaults.slice();
+ }
+
+ // ★ 启动无限循环 ★
+ startLoop();
+
+ /* 实时订阅新弹幕 */
+ supabaseClient
+   .channel('danmaku-realtime')
+   .on('postgres_changes',
+     {event:'INSERT',schema:'public',table:'messages'},
+     (payload)=>{
+       fireDanmaku(payload.new.content, payload.new.color);  // 立即显示
+       addToPool(payload.new.content, payload.new.color);     // 加入循环池
+     }
+   )
+   .subscribe(s=>console.log('Realtime:',s));
 })();
 
 /* ═══════════════════════════════════════
@@ -858,7 +999,7 @@ try{if(window.supabase)supabaseClient=window.supabase.createClient(SUPABASE_URL,
   {name:'Haerin',emoji:'🐱',src:'img/haerin.png'},
   {name:'Hyein',emoji:'👑',src:'img/hyein.png'},
  ];
- const STICKERS = ['stickers/1.png','stickers/2.png','stickers/3.png','stickers/4.png','stickers/5.png','stickers/6.png'];
+ const STICKERS = ['stickers/1.png','stickers/2.png','stickers/3.png','stickers/4.png','stickers/5.png','stickers/6.png','stickers/7.png','stickers/8.png','stickers/9.png','stickers/10.png','stickers/11.png','stickers/12.png','stickers/13.png','stickers/14.png','stickers/15.png','stickers/16.png','stickers/17.png','stickers/18.png','stickers/19.png','stickers/20.png'];
 /* 预加载贴纸图片 */
 const stickerImages = {};
 STICKERS.forEach(src => {
@@ -874,7 +1015,7 @@ const MEMBER_CONFIG = {
   //  offsetY = 距照片底部的距离（越大越往上）
   'Minji':    { scale: 1.00, offsetX: 10, offsetY: 0 },
   'Hanni':    { scale: 0.95, offsetX: 0, offsetY: 0 },
-  'Danielle': { scale: 0.95, offsetX: 0, offsetY: 0 },
+  'Danielle': { scale: 1.00, offsetX: 0, offsetY: 0 },
   'Haerin':   { scale: 1.05, offsetX: 10, offsetY: 0 },
   'Hyein':    { scale: 0.95, offsetX: 0, offsetY: 0 },
 };
@@ -1503,6 +1644,30 @@ gsap.from('.collage-notebook',{y:100,opacity:0,rotation:-2,duration:1,ease:'powe
   }
 })();
 </script>
+
+<div style="
+  text-align:center;
+  padding:20px 20px 10px;
+  max-width:600px;
+  margin:0 auto;
+  font-size:11px;
+  line-height:1.8;
+  color:#bbb;
+  font-family:var(--font-body);
+  position:relative;
+  z-index:2;
+">
+  <p style="margin-bottom:6px;">⚠️ DISCLAIMER</p>
+  <p>
+    本站为粉丝自制非官方网站，不做任何商业用途。<br>
+    所有图片及素材版权归 ADOR / HYBE 及相关权利人所有。<br>
+    This is an unofficial fan-made site for non-commercial use only.<br>
+    All images and materials belong to ADOR / HYBE and their respective owners.<br>
+    如有侵权请联系 / For takedown requests:
+    <a href="mailto:3310199223@qq.com" style="color:var(--y2k-pink);text-decoration:none;">3310199223@qq.com</a>
+  </p>
+</div>
+
 <div style="text-align:center;padding:20px 10px 30px;font-size:12px;color:#d4a0b9;letter-spacing:1px;opacity:0.7;">
   Independently developed by @kk宝
 </div>
